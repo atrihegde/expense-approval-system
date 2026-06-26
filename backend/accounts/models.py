@@ -13,8 +13,8 @@ class User(AbstractUser):
         default=Role.EMPLOYEE,
     )
 
-    department = models.CharField(max_length=100)
-    designation = models.CharField(max_length=100)
+    department = models.CharField(max_length=100, blank=True)
+    designation = models.CharField(max_length=100, blank=True)
     status = models.BooleanField(default=True)
 
     def __str__(self):

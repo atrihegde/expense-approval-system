@@ -8,6 +8,14 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from .serializers import LoginSerializer, UserSerializer
 
+from rest_framework import generics
+from .models import User
+from .serializers import (
+    EmployeeSerializer,
+    EmployeeUpdateSerializer,
+)
+from .permissions import IsAdmin
+
 
 class LoginView(APIView):
 
@@ -53,3 +61,33 @@ class CurrentUserView(APIView):
         serializer = UserSerializer(request.user)
 
         return Response(serializer.data)
+
+
+class EmployeeListCreateView(generics.ListCreateAPIView):
+    queryset = User.objects.filter(
+        role=User.Role.EMPLOYEE,
+        status=True
+    )
+    permission_classes = [IsAdmin]
+
+    def get_serializer_class(self):
+        if self.request.method == "POST":
+            return EmployeeSerializer
+        return EmployeeUpdateSerializer
+
+
+class EmployeeDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.filter(
+        role=User.Role.EMPLOYEE,
+        status=True
+    )
+    permission_classes = [IsAdmin]
+
+    def get_serializer_class(self):
+        if self.request.method in ["PUT", "PATCH"]:
+            return EmployeeUpdateSerializer
+        return EmployeeSerializer
+
+    def perform_destroy(self, instance):
+        instance.status = False
+        instance.save()
