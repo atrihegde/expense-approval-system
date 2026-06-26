@@ -1,3 +1,28 @@
-from django.shortcuts import render
+from rest_framework import generics
 
-# Create your views here.
+from .models import Category
+from .serializers import CategorySerializer
+
+from accounts.permissions import IsAdmin
+
+
+class CategoryListCreateView(generics.ListCreateAPIView):
+
+    queryset = Category.objects.filter(status=True)
+
+    serializer_class = CategorySerializer
+
+    permission_classes = [IsAdmin]
+
+
+class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
+
+    queryset = Category.objects.filter(status=True)
+
+    serializer_class = CategorySerializer
+
+    permission_classes = [IsAdmin]
+
+    def perform_destroy(self, instance):
+        instance.status = False
+        instance.save()
