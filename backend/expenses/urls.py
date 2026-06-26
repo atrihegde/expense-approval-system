@@ -1,5 +1,6 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
+from .views import DashboardView
 
 from .views import (
     CategoryListCreateView,
@@ -24,6 +25,11 @@ urlpatterns = [
         "categories/<int:pk>/",
         CategoryDetailView.as_view(),
         name="category-detail",
+    ),
+    path(
+        "dashboard/",
+        DashboardView.as_view(),
+        name="dashboard",
     ),
 ]
 

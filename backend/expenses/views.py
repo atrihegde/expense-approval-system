@@ -10,6 +10,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import serializers
 
+from django.db.models import Sum
+from rest_framework.views import APIView
+
+from .models import Category
+from accounts.models import User
+
 from .models import ExpenseClaim
 from .serializers import (
     ExpenseClaimSerializer,
@@ -189,3 +195,90 @@ class ExpenseClaimViewSet(viewsets.ModelViewSet):
             ExpenseClaimSerializer(claim).data,
             status=status.HTTP_200_OK,
         )
+
+
+class DashboardView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        user = request.user
+
+        if user.role == user.Role.ADMIN:
+
+            recent_claims = ExpenseClaim.objects.order_by(
+                "-created_at"
+            )[:5]
+
+            data = {
+                "total_employees": User.objects.filter(
+                    role=User.Role.EMPLOYEE,
+                    status=True,
+                ).count(),
+
+                "total_categories": Category.objects.filter(
+                    status=True,
+                ).count(),
+
+                "total_claims": ExpenseClaim.objects.count(),
+
+                "pending_claims": ExpenseClaim.objects.filter(
+                    status=ExpenseClaim.Status.SUBMITTED,
+                ).count(),
+
+                "approved_claims": ExpenseClaim.objects.filter(
+                    status=ExpenseClaim.Status.APPROVED,
+                ).count(),
+
+                "rejected_claims": ExpenseClaim.objects.filter(
+                    status=ExpenseClaim.Status.REJECTED,
+                ).count(),
+
+                "recent_claims": ExpenseClaimSerializer(
+                    recent_claims,
+                    many=True,
+                ).data,
+            }
+
+        else:
+
+            queryset = ExpenseClaim.objects.filter(
+                employee=user,
+            )
+
+            recent_claims = queryset.order_by(
+                "-created_at"
+            )[:5]
+
+            total_amount = (
+                queryset.aggregate(
+                    total=Sum("amount")
+                )["total"]
+                or 0
+            )
+
+            data = {
+                "my_claims": queryset.count(),
+
+                "pending_claims": queryset.filter(
+                    status=ExpenseClaim.Status.SUBMITTED,
+                ).count(),
+
+                "approved_claims": queryset.filter(
+                    status=ExpenseClaim.Status.APPROVED,
+                ).count(),
+
+                "rejected_claims": queryset.filter(
+                    status=ExpenseClaim.Status.REJECTED,
+                ).count(),
+
+                "total_amount_claimed": total_amount,
+
+                "recent_claims": ExpenseClaimSerializer(
+                    recent_claims,
+                    many=True,
+                ).data,
+            }
+
+        return Response(data)
