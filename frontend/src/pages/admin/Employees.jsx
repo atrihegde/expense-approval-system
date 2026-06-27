@@ -7,6 +7,7 @@ import {
     // getEmployees,
     createEmployee,
 } from "../../services/employeeService";
+import { toast } from "react-toastify";
 
 
 function Employees() {
@@ -36,19 +37,30 @@ function Employees() {
 
             loadEmployees();
 
-            alert("Employee created successfully.");
+            toast.success("Employee created successfully!");
 
-        } catch (error) {
-    const errors = error.response?.data;
+        } 
+        catch (error) {
 
-    if (errors) {
-        Object.entries(errors).forEach(([field, messages]) => {
-            alert(`${field}: ${messages.join(", ")}`);
-        });
-    } else {
-        alert("Something went wrong.");
-    }
-}
+            const errors = error.response?.data;
+
+            if (errors) {
+
+                Object.entries(errors).forEach(([field, messages]) => {
+
+                    toast.error(
+                        `${field}: ${messages.join(", ")}`
+                    );
+
+                });
+
+            } else {
+
+                toast.error("Something went wrong.");
+
+            }
+        }
+
     };
 
     if (!employees) {
@@ -94,7 +106,11 @@ function Employees() {
 
             </div>
 
-            <EmployeeTable employees={employees} />
+            <EmployeeTable
+                employees={employees}
+                onEdit={(employee) => console.log(employee)}
+                onDelete={(employee) => console.log(employee)}
+            />
 
             <EmployeeModal
                 show={showModal}

@@ -1,4 +1,8 @@
-export default function EmployeeTable({ employees }) {
+export default function EmployeeTable({
+    employees,
+    onEdit,
+    onDelete,
+}) {
     return (
         <div className="card shadow-sm">
 
@@ -66,13 +70,15 @@ export default function EmployeeTable({ employees }) {
                                     <td>
 
                                         <button
-                                            className="btn btn-sm btn-warning me-2"
+                                            className="btn btn-warning btn-sm me-2"
+                                            onClick={() => onEdit(employee)}
                                         >
                                             <i className="bi bi-pencil"></i>
                                         </button>
 
                                         <button
-                                            className="btn btn-sm btn-danger"
+                                            className="btn btn-danger btn-sm"
+                                            onClick={() => onDelete(employee)}
                                         >
                                             <i className="bi bi-trash"></i>
                                         </button>
