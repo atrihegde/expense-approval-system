@@ -1,12 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function EmployeeModal({
     show,
+    employee,
     onClose,
     onSave,
-}) {
+}) 
+    
+{
 
-    const [formData, setFormData] = useState({
+    const emptyForm = {
         username: "",
         password: "",
         first_name: "",
@@ -14,7 +17,21 @@ export default function EmployeeModal({
         email: "",
         department: "",
         designation: "",
-    });
+    };
+
+    const [formData, setFormData] = useState(emptyForm);
+
+    useEffect(() => {
+        if (employee) {
+            setFormData({
+                ...employee,
+                password: "",
+            });
+        } else {
+            setFormData(emptyForm);
+        }
+    }, [employee]);
+    
 
     const handleChange = (e) => {
         setFormData({
@@ -39,7 +56,9 @@ export default function EmployeeModal({
                 <div className="modal-content">
 
                     <div className="modal-header">
-                        <h5>Add Employee</h5>
+                        <h5>
+                            {employee ? "Edit Employee" : "Add Employee"}
+                        </h5>
 
                         <button
                             className="btn-close"
@@ -56,27 +75,33 @@ export default function EmployeeModal({
                                 <div className="col-md-6 mb-3">
                                     <input
                                         className="form-control"
-                                        placeholder="Username"
                                         name="username"
+                                        placeholder="Username"
+                                        value={formData.username}
+                                        disabled={!!employee}
                                         onChange={handleChange}
                                     />
                                 </div>
 
-                                <div className="col-md-6 mb-3">
-                                    <input
-                                        className="form-control"
-                                        placeholder="Password"
-                                        type="password"
-                                        name="password"
-                                        onChange={handleChange}
-                                    />
-                                </div>
+                                {!employee && (
+                                    <div className="col-md-6 mb-3">
+                                        <input
+                                            className="form-control"
+                                            placeholder="Password"
+                                            type="password"
+                                            name="password"
+                                            value={formData.password}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                )}
 
                                 <div className="col-md-6 mb-3">
                                     <input
                                         className="form-control"
                                         placeholder="First Name"
                                         name="first_name"
+                                        value={formData.first_name}
                                         onChange={handleChange}
                                     />
                                 </div>
@@ -86,6 +111,7 @@ export default function EmployeeModal({
                                         className="form-control"
                                         placeholder="Last Name"
                                         name="last_name"
+                                        value={formData.last_name}
                                         onChange={handleChange}
                                     />
                                 </div>
@@ -95,6 +121,7 @@ export default function EmployeeModal({
                                         className="form-control"
                                         placeholder="Email"
                                         name="email"
+                                        value={formData.email}
                                         onChange={handleChange}
                                     />
                                 </div>
@@ -104,6 +131,7 @@ export default function EmployeeModal({
                                         className="form-control"
                                         placeholder="Department"
                                         name="department"
+                                        value={formData.department}
                                         onChange={handleChange}
                                     />
                                 </div>
@@ -113,6 +141,7 @@ export default function EmployeeModal({
                                         className="form-control"
                                         placeholder="Designation"
                                         name="designation"
+                                        value={formData.designation}
                                         onChange={handleChange}
                                     />
                                 </div>
@@ -135,7 +164,7 @@ export default function EmployeeModal({
                                 type="submit"
                                 className="btn btn-primary"
                             >
-                                Save
+                                {employee ? "Update" : "Save"}
                             </button>
 
                         </div>

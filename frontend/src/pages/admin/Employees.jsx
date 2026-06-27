@@ -3,11 +3,12 @@ import { getEmployees } from "../../services/employeeService";
 import EmployeeTable from "../../components/common/EmployeeTable";
 import Loader from "../../components/common/Loader";
 import EmployeeModal from "../../components/common/EmployeeModal";
-import {
-    // getEmployees,
-    createEmployee,
-} from "../../services/employeeService";
 import { toast } from "react-toastify";
+import {
+    createEmployee,
+    updateEmployee,
+    deleteEmployee,
+} from "../../services/employeeService";
 
 
 function Employees() {
@@ -15,6 +16,8 @@ function Employees() {
     const [employees, setEmployees] = useState([]);
     const [search, setSearch] = useState("");
     const [showModal, setShowModal] = useState(false);
+    const [selectedEmployee, setSelectedEmployee] = useState(null);
+
 
     useEffect(() => {
         loadEmployees();
@@ -31,38 +34,78 @@ function Employees() {
 
     const handleSave = async (employeeData) => {
         try {
-            await createEmployee(employeeData);
+            if (selectedEmployee) {
+                const updateData = {
+                    first_name: employeeData.first_name,
+                    last_name: employeeData.last_name,
+                    email: employeeData.email,
+                    department: employeeData.department,
+                    designation: employeeData.designation,
+                    status: selectedEmployee.status,
+                };
+
+                await updateEmployee(
+                    selectedEmployee.id,
+                    updateData
+                );
+                toast.success("Employee updated successfully!");
+            } else {
+                await createEmployee(employeeData);
+                toast.success("Employee created successfully!");
+            }
 
             setShowModal(false);
-
+            setSelectedEmployee(null);
             loadEmployees();
-
-            toast.success("Employee created successfully!");
-
         } 
         catch (error) {
+            console.error(error.response?.data);
 
             const errors = error.response?.data;
 
             if (errors) {
+                Object.entries(errors).forEach(([field, value]) => {
 
-                Object.entries(errors).forEach(([field, messages]) => {
+                    const message = Array.isArray(value)
+                        ? value.join(", ")
+                        : value;
 
-                    toast.error(
-                        `${field}: ${messages.join(", ")}`
-                    );
-
+                    toast.error(`${field}: ${message}`);
                 });
-
             } else {
-
                 toast.error("Something went wrong.");
-
             }
+        }
+    };
+    
+
+    const handleDelete = async (employee) => {
+
+        const confirmed = window.confirm(
+            `Delete ${employee.first_name} ${employee.last_name}?`
+        );
+
+        if (!confirmed) return;
+
+        try {
+
+            await deleteEmployee(employee.id);
+
+            toast.success("Employee deleted successfully!");
+
+            loadEmployees();
+
+        } catch (error) {
+
+            console.error(error.response?.data);
+
+            toast.error("Unable to delete employee.");
+
         }
 
     };
 
+    
     if (!employees) {
         return <Loader />;
     }
@@ -95,7 +138,10 @@ function Employees() {
 
                     <button
                         className="btn btn-primary"
-                        onClick={() => setShowModal(true)}
+                        onClick={() => {
+                            setSelectedEmployee(null);
+                            setShowModal(true);
+                        }}
                     >
                         <i className="bi bi-plus-circle me-2"></i>
 
@@ -108,16 +154,22 @@ function Employees() {
 
             <EmployeeTable
                 employees={employees}
-                onEdit={(employee) => console.log(employee)}
-                onDelete={(employee) => console.log(employee)}
+                onEdit={(employee) => {
+                    setSelectedEmployee(employee);
+                    setShowModal(true);
+                }}
+                onDelete={handleDelete}
             />
 
             <EmployeeModal
                 show={showModal}
-                onClose={() => setShowModal(false)}
+                employee={selectedEmployee}
+                onClose={() => {
+                    setShowModal(false);
+                    setSelectedEmployee(null);
+                }}
                 onSave={handleSave}
             />
-
         </div>
     );
 }

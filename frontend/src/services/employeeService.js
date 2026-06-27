@@ -18,3 +18,20 @@ export const createEmployee = async (data) => {
 
     return response.data;
 };
+
+export const updateEmployee = async (id, data) => {
+    const response = await api.put(
+        `auth/employees/${id}/`,
+        data
+    );
+
+    return response.data;
+};
+
+export const deleteEmployee = async (id) => {
+    const response = await api.delete(
+        `auth/employees/${id}/`
+    );
+
+    return response.data;
+};
