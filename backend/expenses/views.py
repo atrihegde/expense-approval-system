@@ -1,7 +1,6 @@
 from rest_framework import generics
 from accounts.permissions import IsAdmin
 
-from .models import Category
 from .serializers import CategorySerializer
 
 from rest_framework import viewsets, status
@@ -13,13 +12,18 @@ from rest_framework import serializers
 from django.db.models import Sum
 from rest_framework.views import APIView
 
-from .models import Category
 from accounts.models import User
 
-from .models import ExpenseClaim
+from .models import (
+    Category,
+    ExpenseClaim,
+)
+
 from .serializers import (
+    CategorySerializer,
     ExpenseClaimSerializer,
     ApprovalSerializer,
+    DashboardSerializer,
 )
 
 
@@ -79,6 +83,12 @@ class ExpenseClaimViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["post"])
     def approve(self, request, pk=None):
+        if request.user.role != request.user.Role.ADMIN:
+            return Response(
+                {"detail": "Permission denied."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
         claim = self.get_object()
 
         if claim.status != ExpenseClaim.Status.SUBMITTED:
@@ -88,11 +98,6 @@ class ExpenseClaimViewSet(viewsets.ModelViewSet):
                     "Only submitted claims can be approved."
                 },
                 status=status.HTTP_400_BAD_REQUEST,
-            )
-        if request.user.role != request.user.Role.ADMIN:
-            return Response(
-                {"detail": "Permission denied."},
-                status=status.HTTP_403_FORBIDDEN,
             )
 
         serializer = ApprovalSerializer(
@@ -112,6 +117,12 @@ class ExpenseClaimViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["post"])
     def reject(self, request, pk=None):
+        if request.user.role != request.user.Role.ADMIN:
+            return Response(
+                {"detail": "Permission denied."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
         claim = self.get_object()
 
         if claim.status != ExpenseClaim.Status.SUBMITTED:
@@ -121,12 +132,6 @@ class ExpenseClaimViewSet(viewsets.ModelViewSet):
                     "Only submitted claims can be rejected."
                 },
                 status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        if request.user.role != request.user.Role.ADMIN:
-            return Response(
-                {"detail": "Permission denied."},
-                status=status.HTTP_403_FORBIDDEN,
             )
 
         serializer = ApprovalSerializer(
@@ -164,7 +169,7 @@ class ExpenseClaimViewSet(viewsets.ModelViewSet):
         claim.save()
 
         return Response(
-            ExpenseClaimSerializer(claim).data,
+            self.get_serializer(claim).data,
             status=status.HTTP_200_OK,
         )
 
@@ -192,21 +197,18 @@ class ExpenseClaimViewSet(viewsets.ModelViewSet):
         claim.save()
 
         return Response(
-            ExpenseClaimSerializer(claim).data,
+            self.get_serializer(claim).data,
             status=status.HTTP_200_OK,
         )
 
 
 class DashboardView(APIView):
-
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-
         user = request.user
 
-        if user.role == user.Role.ADMIN:
-
+        if user.role == User.Role.ADMIN:
             recent_claims = ExpenseClaim.objects.order_by(
                 "-created_at"
             )[:5]
@@ -235,14 +237,10 @@ class DashboardView(APIView):
                     status=ExpenseClaim.Status.REJECTED,
                 ).count(),
 
-                "recent_claims": ExpenseClaimSerializer(
-                    recent_claims,
-                    many=True,
-                ).data,
+                "recent_claims": recent_claims,
             }
 
         else:
-
             queryset = ExpenseClaim.objects.filter(
                 employee=user,
             )
@@ -254,8 +252,7 @@ class DashboardView(APIView):
             total_amount = (
                 queryset.aggregate(
                     total=Sum("amount")
-                )["total"]
-                or 0
+                )["total"] or 0
             )
 
             data = {
@@ -275,10 +272,9 @@ class DashboardView(APIView):
 
                 "total_amount_claimed": total_amount,
 
-                "recent_claims": ExpenseClaimSerializer(
-                    recent_claims,
-                    many=True,
-                ).data,
+                "recent_claims": recent_claims,
             }
 
-        return Response(data)
+        serializer = DashboardSerializer(data)
+
+        return Response(serializer.data)
