@@ -1,10 +1,11 @@
-from django.shortcuts import render
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.filters import SearchFilter
 
 from .serializers import LoginSerializer, UserSerializer
 
@@ -69,6 +70,17 @@ class EmployeeListCreateView(generics.ListCreateAPIView):
         status=True
     )
     permission_classes = [IsAdmin]
+
+    filter_backends = [SearchFilter]
+
+    search_fields = [
+        "username",
+        "first_name",
+        "last_name",
+        "email",
+        "department",
+        "designation",
+    ]
 
     def get_serializer_class(self):
         if self.request.method == "POST":

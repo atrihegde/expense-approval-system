@@ -1,8 +1,6 @@
 from rest_framework import generics
 from accounts.permissions import IsAdmin
 
-from .serializers import CategorySerializer
-
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -12,8 +10,10 @@ from rest_framework import serializers
 from django.db.models import Sum
 from rest_framework.views import APIView
 
-from accounts.models import User
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
 
+from accounts.models import User
 from .models import (
     Category,
     ExpenseClaim,
@@ -31,6 +31,12 @@ class CategoryListCreateView(generics.ListCreateAPIView):
     queryset = Category.objects.filter(status=True)
     serializer_class = CategorySerializer
     permission_classes = [IsAdmin]
+    filter_backends = [
+        SearchFilter,
+    ]
+    search_fields = [
+        "name",
+    ]
 
 
 class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -44,6 +50,26 @@ class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ExpenseClaimViewSet(viewsets.ModelViewSet):
+    filter_backends = [
+        DjangoFilterBackend,
+        SearchFilter,
+        OrderingFilter,
+    ]
+    filterset_fields = [
+        "status",
+        "category",
+        "expense_date",
+    ]
+    search_fields = [
+        "title",
+        "description",
+        "category__name",
+    ]
+    ordering_fields = [
+        "amount",
+        "expense_date",
+        "created_at",
+    ]
     queryset = ExpenseClaim.objects.all()
 
     serializer_class = ExpenseClaimSerializer
@@ -275,6 +301,6 @@ class DashboardView(APIView):
                 "recent_claims": recent_claims,
             }
 
-        serializer = DashboardSerializer(data)
+        serializer = DashboardSerializer(instance=data)
 
         return Response(serializer.data)
