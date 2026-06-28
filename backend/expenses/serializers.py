@@ -15,6 +15,7 @@ class ExpenseClaimSerializer(serializers.ModelSerializer):
         source="category.name",
         read_only=True,
     )
+    receipt_url = serializers.SerializerMethodField()
 
     class Meta:
         model = ExpenseClaim
@@ -28,11 +29,12 @@ class ExpenseClaimSerializer(serializers.ModelSerializer):
             "amount",
             "expense_date",
             "description",
-            "receipt",
             "status",
             "manager_comments",
             "created_at",
             "updated_at",
+            "receipt",
+            "receipt_url",
         )
 
         read_only_fields = (
@@ -69,6 +71,14 @@ class ExpenseClaimSerializer(serializers.ModelSerializer):
                 }
             )
         return attrs
+
+    def get_receipt_url(self, obj):
+        request = self.context.get("request")
+        if obj.receipt:
+            if request:
+                return request.build_absolute_uri(obj.receipt.url)
+            return obj.receipt.url
+        return None
 
 
 class ApprovalSerializer(serializers.ModelSerializer):
