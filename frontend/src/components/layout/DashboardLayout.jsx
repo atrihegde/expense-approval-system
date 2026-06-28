@@ -4,19 +4,12 @@ import { Outlet } from "react-router-dom";
 
 export default function DashboardLayout() {
     return (
-            <div
-                className="d-flex"
-                style={{
-                    minHeight: "100vh",
-                    background: "#f5f7fb",
-                }}
-            >
+        
+        <div style={{ display: "flex", minHeight: "100vh", background: "#F8FAFC", fontFamily: "'Inter', sans-serif" }}>
             <Sidebar />
-
-            <div className="flex-grow-1">
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
                 <Navbar />
-
-                <div className="container-fluid p-4">
+                <div style={{ padding: "20px 32px 28px", flex: 1 }}>
                     <Outlet />
                 </div>
             </div>
