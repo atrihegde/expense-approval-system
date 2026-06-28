@@ -30,23 +30,25 @@ from .serializers import (
 class CategoryListCreateView(generics.ListCreateAPIView):
     queryset = Category.objects.filter(status=True)
     serializer_class = CategorySerializer
-    permission_classes = [IsAdmin]
-    filter_backends = [
-        SearchFilter,
-    ]
-    search_fields = [
-        "name",
-    ]
+    filter_backends = [SearchFilter]
+    search_fields = ["name"]
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [IsAuthenticated()]
+
+        return [IsAdmin()]
 
 
 class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.filter(status=True)
     serializer_class = CategorySerializer
-    permission_classes = [IsAdmin]
 
-    def perform_destroy(self, instance):
-        instance.status = False
-        instance.save()
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [IsAuthenticated()]
+
+        return [IsAdmin()]
 
 
 class ExpenseClaimViewSet(viewsets.ModelViewSet):

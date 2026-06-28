@@ -70,6 +70,7 @@ class EmployeeListCreateView(generics.ListCreateAPIView):
         status=True
     )
     permission_classes = [IsAdmin]
+    serializer_class = EmployeeSerializer
 
     filter_backends = [SearchFilter]
 
@@ -81,11 +82,6 @@ class EmployeeListCreateView(generics.ListCreateAPIView):
         "department",
         "designation",
     ]
-
-    def get_serializer_class(self):
-        if self.request.method == "POST":
-            return EmployeeSerializer
-        return EmployeeUpdateSerializer
 
 
 class EmployeeDetailView(generics.RetrieveUpdateDestroyAPIView):
