@@ -8,6 +8,8 @@ import AdminDashboard from "../pages/admin/AdminDashboard";
 import EmployeeDashboard from "../pages/employee/EmployeeDashboard";
 import ProtectedRoute from "../components/common/ProtectedRoute";
 import Employees from "../pages/admin/Employees";
+import Categories from "../pages/admin/Categories";
+import Claims from "../pages/employee/Claims";
 
 function AppRoutes() {
     return (
@@ -35,7 +37,12 @@ function AppRoutes() {
                 <Route
                     path="/admin/employees"
                     element={<Employees />}
-                />                
+                />  
+                
+                <Route
+                    path="/admin/categories"
+                    element={<Categories />}
+                />              
             </Route>
 
             {/* Employee Routes */}
@@ -53,8 +60,12 @@ function AppRoutes() {
                         path="/employee/dashboard"
                         element={<EmployeeDashboard />}
                     />
-
                 </Route>
+
+                <Route
+                    path="/employee/claims"
+                    element={<Claims />}
+                />
             </Route>
 
         </Routes>

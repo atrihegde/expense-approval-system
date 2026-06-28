@@ -20,7 +20,7 @@ export default function Sidebar() {
                 <li className="nav-item">
                     <NavLink
                         className="nav-link text-white"
-                        to="/dashboard"
+                        to="/employee/dashboard"
                     >
                         Dashboard
                     </NavLink>
@@ -40,7 +40,7 @@ export default function Sidebar() {
                         <li className="nav-item">
                             <NavLink
                                 className="nav-link text-white"
-                                to="/categories"
+                                to="/admin/categories"
                             >
                                 Categories
                             </NavLink>
@@ -62,18 +62,18 @@ export default function Sidebar() {
                         <li className="nav-item">
                             <NavLink
                                 className="nav-link text-white"
-                                to="/my-claims"
+                                to="/employee/dashboard"
                             >
-                                My Claims
+                                Dashboard
                             </NavLink>
                         </li>
 
                         <li className="nav-item">
                             <NavLink
                                 className="nav-link text-white"
-                                to="/new-claim"
+                                to="/employee/claims"
                             >
-                                New Claim
+                                My Claims
                             </NavLink>
                         </li>
                     </>
