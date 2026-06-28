@@ -49,7 +49,7 @@ export default function Sidebar() {
                         <li className="nav-item">
                             <NavLink
                                 className="nav-link text-white"
-                                to="/claims"
+                                to="/admin/claims"
                             >
                                 Claims
                             </NavLink>

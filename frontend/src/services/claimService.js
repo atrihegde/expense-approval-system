@@ -53,3 +53,25 @@ export const resubmitClaim = async (id) => {
     const response = await api.post(`claims/${id}/resubmit/`);
     return response.data;
 };
+
+export const approveClaim = async (id, comments = "") => {
+    const response = await api.post(
+        `claims/${id}/approve/`,
+        {
+            manager_comments: comments,
+        }
+    );
+
+    return response.data;
+};
+
+export const rejectClaim = async (id, comments) => {
+    const response = await api.post(
+        `claims/${id}/reject/`,
+        {
+            manager_comments: comments,
+        }
+    );
+
+    return response.data;
+};
