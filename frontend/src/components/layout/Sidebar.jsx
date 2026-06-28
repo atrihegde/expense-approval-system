@@ -7,7 +7,7 @@ export default function Sidebar() {
 
     return (
         <div
-            className="bg-dark text-white p-3"
+            className="bg-white text-dark"
             style={{
                 width: "250px",
                 minHeight: "100vh",
@@ -17,20 +17,20 @@ export default function Sidebar() {
 
             <ul className="nav flex-column">
 
-                <li className="nav-item">
+                {/* <li className="nav-item">
                     <NavLink
-                        className="nav-link text-white"
+                        className="nav-link text-dark"
                         to="/employee/dashboard"
                     >
                         Dashboard
                     </NavLink>
-                </li>
+                </li> */}
 
                 {user?.role === "ADMIN" && (
                     <>
                         <li className="nav-item">
                             <NavLink
-                                className="nav-link text-white"
+                                className="nav-link text-dark"
                                 to="/admin/employees"
                             >
                                 Employees
@@ -39,7 +39,7 @@ export default function Sidebar() {
 
                         <li className="nav-item">
                             <NavLink
-                                className="nav-link text-white"
+                                className="nav-link text-dark"
                                 to="/admin/categories"
                             >
                                 Categories
@@ -48,7 +48,7 @@ export default function Sidebar() {
 
                         <li className="nav-item">
                             <NavLink
-                                className="nav-link text-white"
+                                className="nav-link text-dark"
                                 to="/admin/claims"
                             >
                                 Claims
@@ -61,7 +61,7 @@ export default function Sidebar() {
                     <>
                         <li className="nav-item">
                             <NavLink
-                                className="nav-link text-white"
+                                className="nav-link text-dark"
                                 to="/employee/dashboard"
                             >
                                 Dashboard
@@ -70,7 +70,7 @@ export default function Sidebar() {
 
                         <li className="nav-item">
                             <NavLink
-                                className="nav-link text-white"
+                                className="nav-link text-dark"
                                 to="/employee/claims"
                             >
                                 My Claims

@@ -1,15 +1,12 @@
 import { useEffect, useState } from "react";
-import { getDashboard } from "../../services/dashboardService";
-import StatCard from "../../components/common/StatCard";
-import RecentClaimsTable from "../../components/common/RecentClaimsTable";
+
 import Loader from "../../components/common/Loader";
+import ClaimTable from "../../components/common/ClaimTable";
+import { getDashboard } from "../../services/dashboardService";
 
-export default function AdminDashboard() {
+function AdminDashboard() {
+
     const [dashboard, setDashboard] = useState(null);
-
-    useEffect(() => {
-        loadDashboard();
-    }, []);
 
     const loadDashboard = async () => {
         try {
@@ -20,86 +17,101 @@ export default function AdminDashboard() {
         }
     };
 
+    useEffect(() => {
+        loadDashboard();
+    }, []);
+
     if (!dashboard) {
         return <Loader />;
     }
 
     return (
-        <>
-            <h2 className="mb-4">Admin Dashboard</h2>
+        <div>
 
-            <div className="row">
+            <h2 className="mb-4">
+                Admin Dashboard
+            </h2>
 
-                <StatCard
-                    title="Employees"
-                    value={dashboard.total_employees}
-                    icon="bi-people-fill"
-                    color="primary"
-                />
+            <div className="row g-4">
 
-                <StatCard
-                    title="Categories"
-                    value={dashboard.total_categories}
-                    icon="bi-tags-fill"
-                    color="success"
-                />
+                <div className="col-md-4">
+                    <div className="card shadow-sm border-primary">
+                        <div className="card-body text-center">
+                            <i className="bi bi-people fs-1 text-primary"></i>
+                            <h6 className="mt-2">Employees</h6>
+                            <h2>{dashboard.total_employees}</h2>
+                        </div>
+                    </div>
+                </div>
 
-                <StatCard
-                    title="Claims"
-                    value={dashboard.total_claims}
-                    icon="bi-receipt"
-                    color="warning"
-                />
+                <div className="col-md-4">
+                    <div className="card shadow-sm border-success">
+                        <div className="card-body text-center">
+                            <i className="bi bi-tags fs-1 text-success"></i>
+                            <h6 className="mt-2">Categories</h6>
+                            <h2>{dashboard.total_categories}</h2>
+                        </div>
+                    </div>
+                </div>
 
-                <StatCard
-                    title="Pending"
-                    value={dashboard.pending_claims}
-                    icon="bi-hourglass-split"
-                    color="danger"
+                <div className="col-md-4">
+                    <div className="card shadow-sm border-dark">
+                        <div className="card-body text-center">
+                            <i className="bi bi-receipt fs-1 text-dark"></i>
+                            <h6 className="mt-2">Total Claims</h6>
+                            <h2>{dashboard.total_claims}</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="col-md-4">
+                    <div className="card shadow-sm border-warning">
+                        <div className="card-body text-center">
+                            <i className="bi bi-hourglass-split fs-1 text-warning"></i>
+                            <h6 className="mt-2">Pending</h6>
+                            <h2>{dashboard.pending_claims}</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="col-md-4">
+                    <div className="card shadow-sm border-success">
+                        <div className="card-body text-center">
+                            <i className="bi bi-check-circle fs-1 text-success"></i>
+                            <h6 className="mt-2">Approved</h6>
+                            <h2>{dashboard.approved_claims}</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="col-md-4">
+                    <div className="card shadow-sm border-danger">
+                        <div className="card-body text-center">
+                            <i className="bi bi-x-circle fs-1 text-danger"></i>
+                            <h6 className="mt-2">Rejected</h6>
+                            <h2>{dashboard.rejected_claims}</h2>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div className="mt-5">
+
+                <h4 className="mb-3">
+                    Recent Claims
+                </h4>
+
+                <ClaimTable
+                    mode="admin-dashboard"
+                    title={null}
+                    claims={dashboard.recent_claims}
                 />
 
             </div>
 
-            <div className="card shadow-sm mt-4">
-            <div className="card-header">
-                <h5>Recent Claims</h5>
-            </div>
-
-            <div className="card-body">
-
-                <table className="table table-striped">
-
-                    <thead>
-                        <tr>
-                            <th>Title</th>
-                            <th>Employee</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-
-                        {dashboard.recent_claims.map((claim) => (
-
-                            <tr key={claim.id}>
-                                <td>{claim.title}</td>
-                                <td>{claim.employee}</td>
-                                <td>₹{claim.amount}</td>
-                                <td>{claim.status}</td>
-                            </tr>
-
-                        ))}
-
-                    </tbody>
-
-                </table>
-
-            </div>
-            <RecentClaimsTable
-                claims={dashboard.recent_claims}
-            />
         </div>
-        </>
     );
 }
+
+export default AdminDashboard;

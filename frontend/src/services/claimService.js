@@ -50,7 +50,10 @@ export const submitClaim = async (id) => {
 };
 
 export const resubmitClaim = async (id) => {
-    const response = await api.post(`claims/${id}/resubmit/`);
+    const response = await api.post(
+        `claims/${id}/resubmit/`
+    );
+
     return response.data;
 };
 

@@ -4,7 +4,13 @@ import { Outlet } from "react-router-dom";
 
 export default function DashboardLayout() {
     return (
-        <div className="d-flex">
+            <div
+                className="d-flex"
+                style={{
+                    minHeight: "100vh",
+                    background: "#f5f7fb",
+                }}
+            >
             <Sidebar />
 
             <div className="flex-grow-1">
