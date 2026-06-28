@@ -16,14 +16,20 @@ class Command(BaseCommand):
             defaults={
                 "first_name": "Admin",
                 "last_name": "User",
-                "role": User.Role.ADMIN,
                 "email": "admin@example.com",
+                "role": User.Role.ADMIN,
             },
         )
 
+        # Always ensure the admin has the correct permissions
+        admin.role = User.Role.ADMIN
+        admin.is_staff = True
+        admin.is_superuser = True
+        admin.is_active = True
+        admin.set_password("admin123")
+        admin.save()
+
         if created:
-            admin.set_password("admin123")
-            admin.save()
             self.stdout.write(
                 self.style.SUCCESS("Admin created")
             )
@@ -38,9 +44,14 @@ class Command(BaseCommand):
             },
         )
 
+        employee.role = User.Role.EMPLOYEE
+        employee.is_staff = False
+        employee.is_superuser = False
+        employee.is_active = True
+        employee.set_password("employee123")
+        employee.save()
+
         if created:
-            employee.set_password("employee123")
-            employee.save()
             self.stdout.write(
                 self.style.SUCCESS("Employee created")
             )
