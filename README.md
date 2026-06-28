@@ -153,21 +153,13 @@ The frontend communicates with the backend using REST APIs secured with JWT Auth
 
 # 🏛️ Architecture Diagram
 
-> Replace this image after creating your architecture diagram.
-
-```markdown
 ![Architecture Diagram](screenshots/architecture-diagram.png)
-```
 
 ---
 
 # 🗄️ Database ER Diagram
 
-> Replace this image after creating your ER Diagram.
-
-```markdown
 ![ER Diagram](screenshots/er-diagram.png)
-```
 
 ---
 
